@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #CEF2E5 0%, #A7D5F2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .page-wrapper {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            max-width: 860px;
+            width: 100%;
+        }
+
+        .cat-image-wrapper {
+            flex-shrink: 0;
+            width: 260px;
+            border-radius: 12px 0 0 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(64, 27, 14, 0.15);
+        }
+
+        .cat-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .container {
+            background: #ffffff;
+            border: 1px solid #72A69344;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 20px 60px rgba(38, 1, 1, 0.15);
+            padding: 40px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #260101;
+        }
+
+        .subtitle {
+            color: #72A693;
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 54px 14px 14px;
+            border: 2px solid #A7D5F2;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #CEF2E5;
+            color: #260101;
+            transition: border-color 0.2s;
+        }
+
+        input::placeholder {
+            color: #72A693;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #72A693;
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #72A693;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px;
+        }
+
+        .toggle-visibility:hover {
+            color: #260101;
+        }
+
+        .score-section {
+            margin-bottom: 24px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: #72A693;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #260101;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #CEF2E5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            width: 0%;
+        }
+
+        .criteria-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .criterion {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #CEF2E5;
+            font-size: 13px;
+        }
+
+        .criterion:last-child {
+            border-bottom: none;
+        }
+
+        .criterion-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        .criterion-icon.passed {
+            background: #72A69333;
+            color: #72A693;
+        }
+
+        .criterion-icon.failed {
+            background: #A68F9733;
+            color: #A68F97;
+        }
+
+        .criterion-text {
+            color: #401B0E;
+        }
+
+        .criterion-points {
+            color: #A68F97;
+            font-size: 11px;
+            margin-left: auto;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .suggestions {
+            background: #D0F2E6;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 13px;
+        }
+
+        .suggestions-title {
+            color: #72A693;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .suggestions ul {
+            list-style: none;
+            color: #401B0E;
+        }
+
+        .suggestions li {
+            padding: 3px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .suggestions li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #72A693;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #A68F97;
+            font-size: 13px;
+            padding: 20px 0;
+        }
+
+        .web-comment {
+            background: #A68F9722;
+            border: 1px solid #A68F9766;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #401B0E;
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .web-comment-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        .web-comment-title {
+            color: #A68F97;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+    <div class="cat-image-wrapper">
+        <img id="catImage" src="/static/base.png" alt="cat">
+    </div>
+    <div class="container">
+        <h1>🔒 Password Strength Checker</h1>
+        <p class="subtitle">Type a password to see how strong it is</p>
+
+        <div class="input-wrapper">
+            <input type="password" id="passwordInput" placeholder="Enter a password..." autocomplete="off">
+            <button class="toggle-visibility" id="toggleBtn" type="button">Show</button>
+        </div>
+
+        <div id="resultsContainer">
+            <div class="empty-state">Start typing to analyze your password</div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('passwordInput');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        const categoryConfig = {
+            weak:   { label: 'Weak',   color: '#A68F97', bg: '#A68F9733' },
+            fair:   { label: 'Fair',   color: '#A7D5F2', bg: '#A7D5F233' },
+            good:   { label: 'Good',   color: '#72A693', bg: '#72A69333' },
+            strong: { label: 'Strong', color: '#401B0E', bg: '#401B0E22' },
+        };
+
+        const catImage = document.getElementById('catImage');
+
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            toggleBtn.textContent = isPassword ? 'Hide' : 'Show';
+        });
+
+        let debounceTimer = null;
+
+        input.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => checkPassword(input.value), 200);
+        });
+
+        async function checkPassword(password) {
+            if (!password) {
+                resultsContainer.innerHTML = '<div class="empty-state">Start typing to analyze your password</div>';
+                catImage.src = '/static/base.png';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password }),
+                });
+
+                if (!response.ok) throw new Error('Request failed');
+
+                const data = await response.json();
+                renderResults(data);
+            } catch (err) {
+                resultsContainer.innerHTML = '<div class="empty-state">Something went wrong. Try again.</div>';
+            }
+        }
+
+        function renderResults(data) {
+            const cfg = categoryConfig[data.category] || categoryConfig.weak;
+
+            const criteriaHtml = data.criteria.map(c => `
+                <li class="criterion">
+                    <span class="criterion-icon ${c.passed ? 'passed' : 'failed'}">${c.passed ? '✓' : '✕'}</span>
+                    <span class="criterion-text">${c.message}</span>
+                    <span class="criterion-points">${c.points}/${c.max_points}</span>
+                </li>
+            `).join('');
+
+            const suggestionsHtml = data.suggestions.map(s => `<li>${s}</li>`).join('');
+
+            const commentHtml = data.web_comment ? `
+                <div class="web-comment">
+                    <span class="web-comment-icon">😏</span>
+                    <div>
+                        <div class="web-comment-title">Comment</div>
+                        ${data.web_comment}
+                    </div>
+                </div>
+            ` : '';
+
+            resultsContainer.innerHTML = `
+                <div class="score-section">
+                    <div class="score-row">
+                        <span class="score-label">Strength Score</span>
+                        <span class="category-badge" style="background:${cfg.bg};color:${cfg.color}">${cfg.label}</span>
+                    </div>
+                    <div class="score-value">${data.score}/100</div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width:${data.score}%;background-color:${cfg.color}"></div>
+                    </div>
+                </div>
+
+                <ul class="criteria-list">
+                    ${criteriaHtml}
+                </ul>
+
+                <div class="suggestions">
+                    <div class="suggestions-title">Suggestions</div>
+                    <ul>${suggestionsHtml}</ul>
+                </div>
+
+                ${commentHtml}
+            `;
+        }
+    </script>
+</body>
+</html>
