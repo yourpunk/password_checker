@@ -2,7 +2,12 @@
 
 [![Tests](https://github.com/yourpunk/password_checker/actions/workflows/tests.yml/badge.svg)](https://github.com/yourpunk/password_checker/actions/workflows/tests.yml)
 
+
+> **Note:** This runs on Render's free tier, which spins down after inactivity. The first request after idle time may take 30-60 seconds to respond.
+
 Analyzes password strength in real time with a 0-100 score, detailed criteria breakdown, and actionable suggestions.
+
+ Live demo: [your-app.onrender.com](https://password-checker-1w3s.onrender.com)
 
 ## Features
 
